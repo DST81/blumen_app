@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
+import os
+
+# Ordner für Bilder erstellen, falls er nicht existiert
+os.makedirs("bilder", exist_ok=True)
 
 # Daten laden oder neue Datei erstellen
 try:
