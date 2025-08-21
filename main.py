@@ -37,10 +37,15 @@ os.makedirs("bilder", exist_ok=True)
 # --- CSVs laden oder anlegen ---
 try:
     df = pd.read_csv("blumen.csv")
+    # falls alte CSV noch "bild_path" enthält -> umbenennen
+    if "bild_path" in df.columns and "bild_url" not in df.columns:
+        df = df.rename(columns={"bild_path": "bild_url"})
+        df.to_csv("blumen.csv", index=False)
 except FileNotFoundError:
     df = pd.DataFrame(columns=["deutsch", "latein", "familie", "bild_url", "correct_count"])
     df.to_csv("blumen.csv", index=False)
     save_file_to_github("blumen.csv", "blumen.csv", "init blumen.csv")
+
 
 try:
     answers_df = pd.read_csv("antworten.csv")
