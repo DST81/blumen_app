@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import base64
 from github import Github
+from github.GithubException import UnknownObjectException
 
 
 st.set_page_config(
