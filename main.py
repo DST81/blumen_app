@@ -214,9 +214,9 @@ if not answers_df.empty:
 
         st.markdown(
             f"""
-            **Deutscher Name:** <span style='color:{colors['deutsch']}'>{row['deutsch_guess']}</span>  
-            **Lateinischer Name:** <span style='color:{colors['latein']}'>{row['latein_guess']}</span>  
-            **Familie:** <span style='color:{colors['familie']}'>{row['familie_guess']}</span>  
+            **Deutscher Name:** <span style='color:{colors['deutsch']}'>{str(row.get('deutsch_guess',''))}</span>  
+            **Lateinischer Name:** <span style='color:{colors['latein']}'>{str(row.get('latein_guess',''))}</span>  
+            **Familie:** <span style='color:{colors['familie']}'>{str(row.get('familie_guess',''))}</span>  
             """,
             unsafe_allow_html=True
         )
