@@ -198,18 +198,23 @@ else:
                 st.info(tip)
 
 
-# --- Bisherige Antworten anzeigen ---
-st.subheader("Deine bisherigen Antworten")
-for idx, row in answers_df.iterrows():
-    colors = {col: "green" if row[f"{col}_guess"].strip().lower() == row[col].lower() else "red"
-              for col in ["deutsch", "latein", "familie"]}
-    st.markdown(
-        f"**Deutscher Name:** <span style='color:{colors['deutsch']}'>{row['deutsch_guess']}</span> | "
-        f"**Lateinischer Name:** <span style='color:{colors['latein']}'>{row['latein_guess']}</span> | "
-        f"**Familie:** <span style='color:{colors['familie']}'>{row['familie_guess']}</span>",
-        unsafe_allow_html=True
-    )
+# --- Bisherige Antworten anzeigen (nur 5) ---
+if not answers_df.empty:
+    st.subheader("Deine 5 letzten Antworten")
+    for _, row in answers_df.tail(5).iterrows():
+        colors = {
+            col: "green" if str(row[f"{col}_guess"]).strip().lower() == str(row[col]).lower() else "red"
+            for col in ["deutsch", "latein", "familie"]
+        }
 
+        st.markdown(
+            f"""
+            **Deutscher Name:** <span style='color:{colors['deutsch']}'>{row['deutsch_guess']}</span>  
+            **Lateinischer Name:** <span style='color:{colors['latein']}'>{row['latein_guess']}</span>  
+            **Familie:** <span style='color:{colors['familie']}'>{row['familie_guess']}</span>  
+            """,
+            unsafe_allow_html=True
+        )
 # --- Lernfortschritt ---
 st.header("Lernfortschritt")
 if not df.empty:
