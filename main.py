@@ -103,12 +103,17 @@ def get_next_flower():
     weights = 3 - to_learn["correct_count"]
     return to_learn.sample(weights=weights).iloc[0]
 
-# Falls Session-State leer ist oder Blume korrekt beantwortet wurde, neue Blume wählen
-if st.session_state.current_flower_idx is None or st.session_state.get("last_correct", False):
-    next_flower = get_next_flower()
-    if next_flower is not None:
-        st.session_state.current_flower_idx = next_flower.name
-        st.session_state.last_correct = False
+    # --- Direkt nach Wahl der nächsten Blume ---
+    if st.session_state.current_flower_idx is None or st.session_state.get("last_correct", False):
+        next_flower = get_next_flower()
+        if next_flower is not None:
+            st.session_state.current_flower_idx = next_flower.name
+            st.session_state.last_correct = False
+            # Textfelder zurücksetzen
+            st.session_state.deutsch_input = ""
+            st.session_state.latein_input = ""
+            st.session_state.familie_input = ""
+
     else:
         st.session_state.current_flower_idx = None
 
