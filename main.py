@@ -142,22 +142,81 @@ if not df.empty:
             df.loc[df["deutsch"] == flower["deutsch"], "correct_count"] += 1
         else:
             st.error("Nicht ganz richtig 😅")
-            # Tipps anzeigen
+    # --- Tipps generieren ---
+        def generate_tip(correct, guess):
+            tip = ""
+            if correct:
+                tip = guess  # korrekt → keine Tipps nötig
+            else:
+                # Tipp: richtig geratene Buchstaben + 1 zusätzlicher
+                tip = ""
+                for i, c in enumerate(flower[guess.name]):
+                    if i < len(guess) and guess[i].lower() == c.lower():
+                        tip += c
+                    else:
+                        break
+                if len(tip) < len(flower[guess.name]):
+                    tip += flower[guess.name][len(tip)]
+            return tip
+    
+        if not korrekt:
             tips = []
             if not correct_deutsch:
-                tips.append(f"Deutscher Name: {flower['deutsch'][0]}... ({len(flower['deutsch'])} Buchstaben)")
+                tip = ""
+                for i, c in enumerate(flower["deutsch"]):
+                    if i < len(deutsch_guess) and deutsch_guess[i].lower() == c.lower():
+                        tip += c
+                    else:
+                        break
+                if len(tip) < len(flower["deutsch"]):
+                    tip += flower["deutsch"][len(tip)]
+                tips.append(f"Deutscher Name Tipp: {tip}")
             if not correct_latein:
-                tips.append(f"Lateinischer Name: {flower['latein'][0]}... ({len(flower['latein'])} Buchstaben)")
+                tip = ""
+                for i, c in enumerate(flower["latein"]):
+                    if i < len(latein_guess) and latein_guess[i].lower() == c.lower():
+                        tip += c
+                    else:
+                        break
+                if len(tip) < len(flower["latein"]):
+                    tip += flower["latein"][len(tip)]
+                tips.append(f"Lateinischer Name Tipp: {tip}")
             if not correct_familie:
-                tips.append(f"Familie: {flower['familie'][0]}... ({len(flower['familie'])} Buchstaben)")
+                tip = ""
+                for i, c in enumerate(flower["familie"]):
+                    if i < len(familie_guess) and familie_guess[i].lower() == c.lower():
+                        tip += c
+                    else:
+                        break
+                if len(tip) < len(flower["familie"]):
+                    tip += flower["familie"][len(tip)]
+                tips.append(f"Familie Tipp: {tip}")
+    
             for tip in tips:
                 st.info(tip)
-            st.info(f"Richtige Antwort: {flower['deutsch']} / {flower['latein']} / {flower['familie']}")
-
+                
         # Fortschritt sichern
         df.to_csv("blumen.csv", index=False)
         save_file_to_github("blumen.csv", "blumen.csv", "update progress")
 
+
+ # --- Alle bisherigen Antworten anzeigen ---
+    st.subheader("Deine bisherigen Antworten")
+    for idx, row in answers_df.iterrows():
+        deutsch_color = "green" if row["deutsch_guess"].strip().lower() == row["deutsch"].lower() else "red"
+        latein_color = "green" if row["latein_guess"].strip().lower() == row["latein"].lower() else "red"
+        familie_color = "green" if row["familie_guess"].strip().lower() == row["familie"].lower() else "red"
+
+        st.markdown(
+            f"**{row['deutsch_guess']}**: <span style='color:{deutsch_color}'>{row['deutsch_guess']}</span> | "
+            f"**{row['latein_guess']}**: <span style='color:{latein_color}'>{row['latein_guess']}</span> | "
+            f"**{row['familie_guess']}**: <span style='color:{familie_color}'>{row['familie_guess']}</span>",
+            unsafe_allow_html=True
+        )
+
+    # Richtige Antwort nur anzeigen, wenn alles korrekt ist
+    if korrekt:
+        st.success(f"Richtige Antwort: {flower['deutsch']} / {flower['latein']} / {flower['familie']}")
 # --- Fortschritt anzeigen ---
 st.header("Lernfortschritt")
 if not df.empty:
