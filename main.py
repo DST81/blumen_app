@@ -219,12 +219,12 @@ with st.expander("Blumen lernen"):
     
 
 # --- Lernfortschritt ---
-st.header("Lernfortschritt")
-if not df.empty:
-    total = len(df)
-    learned = len(df[df["correct_count"] >= 3])
-    st.write(f"Von {total} Blumen sind {learned} Blumen gut gelernt (≥3 richtige Antworten).")
-    st.dataframe(df[["deutsch", "correct_count"]])
+with st.expander("Lernfortschritt"):
+    if not df.empty:
+        total = len(df)
+        learned = len(df[df["correct_count"] >= 3])
+        st.write(f"Von {total} Blumen sind {learned} Blumen gut gelernt (≥3 richtige Antworten).")
+        st.dataframe(df[["deutsch", "correct_count"]])
 
 if st.button("Neu starten"):
     df["correct_count"] = 0
