@@ -118,9 +118,6 @@ if st.session_state.current_flower_idx is None or st.session_state.get("last_cor
 
     
 
-    else:
-        st.session_state.current_flower_idx = None
-
 if st.session_state.current_flower_idx is None:
     st.balloons()
     st.success("🎉 Du hast alle Blumen mindestens 3-mal korrekt beantwortet! Super! 🎉")
@@ -199,6 +196,14 @@ if st.button("Neu starten"):
     df["correct_count"] = 0
     df.to_csv("blumen.csv", index=False)
     save_file_to_github("blumen.csv", "blumen.csv", "reset progress")
+
+    # Antworten zurücksetzen
+    answers_df = pd.DataFrame(columns=[
+        "deutsch", "latein", "familie",
+        "deutsch_guess", "latein_guess", "familie_guess", "korrekt"
+    ])
+    answers_df.to_csv("antworten.csv", index=False)
+    save_file_to_github("antworten.csv", "antworten.csv", "reset answers")
     
     st.session_state.current_flower_idx = None
     st.session_state.last_correct = False
