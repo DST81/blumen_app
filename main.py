@@ -144,12 +144,13 @@ else:
     latein_guess = st.text_input("Lateinischer Name", key="latein_input")
     familie_guess = st.text_input("Familie", key="familie_input")
 
+    # --- Antwort prüfen ---
     if st.button("Antwort prüfen"):
         correct_deutsch = deutsch_guess.strip().lower() == flower["deutsch"].lower()
         correct_latein = latein_guess.strip().lower() == flower["latein"].lower()
         correct_familie = familie_guess.strip().lower() == flower["familie"].lower()
         korrekt = correct_deutsch and correct_latein and correct_familie
-
+    
         # Antworten speichern
         answers_df = pd.concat([answers_df, pd.DataFrame({
             "deutsch": [flower["deutsch"]],
@@ -162,24 +163,40 @@ else:
         })], ignore_index=True)
         answers_df.to_csv("antworten.csv", index=False)
         save_file_to_github("antworten.csv", "antworten.csv", "update antworten")
-
+    
         if korrekt:
             st.success("Alles korrekt! 🎉")
             df.loc[flower.name, "correct_count"] += 1
             df.to_csv("blumen.csv", index=False)
             save_file_to_github("blumen.csv", "blumen.csv", "update progress")
             st.session_state.last_correct = True
+            st.rerun()  # sofort neue Blume laden
         else:
             st.error("Nicht ganz richtig 😅")
+            # Tipps generieren
+            import random
             tips = []
-            for col, guess, correct in [("deutsch", deutsch_guess, correct_deutsch),
-                                        ("latein", latein_guess, correct_latein),
-                                        ("familie", familie_guess, correct_familie)]:
+            for col, guess, correct in [
+                ("deutsch", deutsch_guess, correct_deutsch),
+                ("latein", latein_guess, correct_latein),
+                ("familie", familie_guess, correct_familie)
+            ]:
                 if not correct:
-                    tip = "".join([c if i < len(guess) and guess[i].lower() == c.lower() else c for i, c in enumerate(flower[col])])
-                    tips.append(f"{col.capitalize()} Tipp: {tip}")
+                    solution = flower[col]
+                    # Richtige Buchstaben beibehalten
+                    revealed = "".join(
+                        g if i < len(guess) and g.lower() == solution[i].lower() else "_"
+                        for i, g in enumerate(solution)
+                    )
+                    # Einen weiteren zufälligen Buchstaben aufdecken
+                    hidden_indices = [i for i, c in enumerate(revealed) if c == "_"]
+                    if hidden_indices:
+                        i = random.choice(hidden_indices)
+                        revealed = revealed[:i] + solution[i] + revealed[i+1:]
+                    tips.append(f"{col.capitalize()} Tipp: {revealed}")
             for tip in tips:
                 st.info(tip)
+
 
 # --- Bisherige Antworten anzeigen ---
 st.subheader("Deine bisherigen Antworten")
