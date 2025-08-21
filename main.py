@@ -210,25 +210,6 @@ else:
             if tips:
                 st.info("\n".join(tips))
 
-# --- Bisherige Antworten anzeigen (nur 5) ---
-if not answers_df.empty:
-    st.subheader("Deine letzten Antworten")
-    # nur die letzten 5 Antworten nehmen
-    for idx, row in answers_df.tail(5).iterrows():
-        colors = {}
-        for col in ["deutsch", "latein", "familie"]:
-            guess = str(row[f"{col}_guess"]) if pd.notna(row[f"{col}_guess"]) else ""
-            solution = str(row[col]) if pd.notna(row[col]) else ""
-            colors[col] = "green" if guess.strip().lower() == solution.lower() else "red"
-
-        st.markdown(
-            f"""
-            **Deutscher Name:** <span style='color:{colors['deutsch']}'>{row['deutsch_guess']}</span>  
-            **Lateinischer Name:** <span style='color:{colors['latein']}'>{row['latein_guess']}</span>  
-            **Familie:** <span style='color:{colors['familie']}'>{row['familie_guess']}</span>  
-            """,
-            unsafe_allow_html=True
-        )
 
 # --- Lernfortschritt ---
 st.header("Lernfortschritt")
