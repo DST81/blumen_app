@@ -65,35 +65,51 @@ with st.form("add_flower"):
     familie = st.text_input("Familie")
     bild = st.file_uploader("Bild hochladen", type=["png", "jpg", "jpeg"])
     submitted = st.form_submit_button("Hinzufügen")
-    if submitted and deutsch and latein and familie and bild:
-        bild_path = f"bilder/{bild.name}"
-        with open(bild_path, "wb") as f:
-            f.write(bild.getbuffer())
-        
-        # GitHub Upload
-        with open(bild_path, "rb") as f:
-            content = f.read()
-        repo_path = f"bilder/{bild.name}"
-        try:
-            contents = repo.get_contents(repo_path, ref=BRANCH)
-            repo.update_file(contents.path, f"Update {bild.name}", content, contents.sha, branch=BRANCH)
-        except:
-            repo.create_file(repo_path, f"Add {bild.name}", content, branch=BRANCH)
+    if submitted:
+        if bild:
+            bild_path = f"bilder/{bild.name}"
+            # Lokal speichern
+            with open(bild_path, "wb") as f:
+                f.write(bild.getbuffer())
 
-        bild_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{BRANCH}/{repo_path}"
+            # GitHub Upload (Base64 kodiert)
+            with open(bild_path, "rb") as f:
+                content = f.read()
+            repo_path = f"bilder/{bild.name}"
+            try:
+                contents = repo.get_contents(repo_path, ref=BRANCH)
+                repo.update_file(
+                    path=contents.path,
+                    message=f"Update {bild.name}",
+                    content=base64.b64encode(content).decode(),
+                    sha=contents.sha,
+                    branch=BRANCH
+                )
+            except:
+                repo.create_file(
+                    path=repo_path,
+                    message=f"Add {bild.name}",
+                    content=base64.b64encode(content).decode(),
+                    branch=BRANCH
+                )
 
-        new_entry = pd.DataFrame({
-            "deutsch": [deutsch],
-            "latein": [latein],
-            "familie": [familie],
-            "bild_url": [bild_url],
-            "correct_count": [0]
-        })
-        df = pd.concat([df, new_entry], ignore_index=True)
-        df.to_csv("blumen.csv", index=False)
-        save_file_to_github("blumen.csv", "blumen.csv", "update blume hinzugefügt")
+            # URL korrekt URL-encoded
+            from urllib.parse import quote
+            bild_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{BRANCH}/bilder/{quote(bild.name)}"
 
-        st.success(f"Blume {deutsch} hinzugefügt!")
+            # Neue Blume in DataFrame speichern
+            new_entry = pd.DataFrame({
+                "deutsch": [deutsch],
+                "latein": [latein],
+                "familie": [familie],
+                "bild_url": [bild_url],
+                "correct_count": [0]
+            })
+            df = pd.concat([df, new_entry], ignore_index=True)
+            df.to_csv("blumen.csv", index=False)
+            save_file_to_github("blumen.csv", "blumen.csv", "update blume hinzugefügt")
+
+            st.success(f"Blume {deutsch} hinzugefügt!")
 
 # --- Blumen lernen ---
 st.header("Blumen lernen")
