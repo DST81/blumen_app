@@ -161,6 +161,10 @@ else:
             "familie_guess": [familie_guess],
             "korrekt": [korrekt]
         })], ignore_index=True)
+    
+        # Nur die letzten 5 Antworten behalten
+        answers_df = answers_df.tail(5)
+    
         answers_df.to_csv("antworten.csv", index=False)
         save_file_to_github("antworten.csv", "antworten.csv", "update antworten")
     
@@ -173,6 +177,7 @@ else:
             st.rerun()  # sofort neue Blume laden
         else:
             st.error("Nicht ganz richtig 😅")
+
             # Tipps generieren
             import random
             tips = []
