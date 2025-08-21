@@ -238,7 +238,7 @@ if st.button("Neu starten"):
     answers_df.to_csv("antworten.csv", index=False)
     save_file_to_github("antworten.csv", "antworten.csv", "reset answers")
     
-    for key in ["current_flower_idx", "last_correct", "deutsch_input", "latein_input", "familie_input"]:
-        st.session_state[key] = None if "idx" in key else False if key=="last_correct" else ""
-    
+    for key in ["current_flower_idx", "last_correct"]:
+        st.session_state[key] = None if "idx" in key else False
+    st.session_state.current_flower_idx = None
     st.rerun()
