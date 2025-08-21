@@ -95,7 +95,7 @@ if not df.empty:
     flower = df.sample(weights=weights).iloc[0]
 
     try:
-    st.image(flower["bild_path"], width=300)
+        st.image(flower["bild_path"], width=300)
     except:
         st.image(flower["bild_url"], width=300)
 
