@@ -78,32 +78,40 @@ with st.expander("Neue Blume hinzufügen"):
                 # Lokal speichern
                 with open(bild_path, "wb") as f:
                     f.write(bild.getbuffer())
-    
-                # GitHub Upload (Base64 kodiert)
+            
+                # GitHub Upload vorbereiten
                 with open(bild_path, "rb") as f:
                     content = f.read()
+                content_b64 = base64.b64encode(content).decode()
                 repo_path = f"bilder/{bild.name}"
+            
                 try:
+                    # Prüfen, ob die Datei existiert
                     contents = repo.get_contents(repo_path, ref=BRANCH)
+                    # Datei existiert → update
                     repo.update_file(
-                        path=contents.path,
+                        path=repo_path,
                         message=f"Update {bild.name}",
-                        content=base64.b64encode(content).decode(),
+                        content=content_b64,
                         sha=contents.sha,
                         branch=BRANCH
                     )
-                except:
+                except UnknownObjectException:
+                    # Datei existiert nicht → create
                     repo.create_file(
                         path=repo_path,
                         message=f"Add {bild.name}",
-                        content=base64.b64encode(content).decode(),
+                        content=content_b64,
                         branch=BRANCH
                     )
-    
+                except Exception as e:
+                    st.error(f"Fehler beim Hochladen zu GitHub: {e}")
+            
                 # URL korrekt URL-encoded
                 from urllib.parse import quote
                 bild_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{BRANCH}/bilder/{quote(bild.name)}"
     
+
                 # Neue Blume in DataFrame speichern
                 new_entry = pd.DataFrame({
                     "deutsch": [deutsch],
