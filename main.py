@@ -66,30 +66,29 @@ st.title("Blumen lernen 🌸")
 
 # --- Neue Blume hinzufügen ---
 with st.expander("Neue Blume hinzufügen"):
-
     with st.form("add_flower"):
         deutsch = st.text_input("Deutscher Name")
         latein = st.text_input("Lateinischer Name")
         familie = st.text_input("Familie")
         bild = st.file_uploader("Bild hochladen", type=["png", "jpg", "jpeg"])
         submitted = st.form_submit_button("Hinzufügen")
+
         if submitted:
             if bild:
                 bild_path = f"bilder/{bild.name}"
-                # Lokal speichern
+
+                # --- Lokal speichern ---
                 with open(bild_path, "wb") as f:
                     f.write(bild.getbuffer())
-            
-                # GitHub Upload vorbereiten
+
+                # --- GitHub Upload ---
                 with open(bild_path, "rb") as f:
                     content = f.read()
                 content_b64 = base64.b64encode(content).decode()
                 repo_path = f"bilder/{bild.name}"
-            
+
                 try:
-                    # Prüfen, ob die Datei existiert
                     contents = repo.get_contents(repo_path, ref=BRANCH)
-                    # Datei existiert → update
                     repo.update_file(
                         path=repo_path,
                         message=f"Update {bild.name}",
@@ -97,23 +96,19 @@ with st.expander("Neue Blume hinzufügen"):
                         sha=contents.sha,
                         branch=BRANCH
                     )
-                except UnknownObjectException:
-                    # Datei existiert nicht → create
+                except:
                     repo.create_file(
                         path=repo_path,
                         message=f"Add {bild.name}",
                         content=content_b64,
                         branch=BRANCH
                     )
-                except Exception as e:
-                    st.error(f"Fehler beim Hochladen zu GitHub: {e}")
-            
-                # URL korrekt URL-encoded
+
+                # --- URL für App ---
                 from urllib.parse import quote
                 bild_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{BRANCH}/bilder/{quote(bild.name)}"
-    
 
-                # Neue Blume in DataFrame speichern
+                # --- Neue Blume in DataFrame speichern ---
                 new_entry = pd.DataFrame({
                     "deutsch": [deutsch],
                     "latein": [latein],
@@ -124,8 +119,9 @@ with st.expander("Neue Blume hinzufügen"):
                 df = pd.concat([df, new_entry], ignore_index=True)
                 df.to_csv("blumen.csv", index=False)
                 save_file_to_github("blumen.csv", "blumen.csv", "update blume hinzugefügt")
-    
+
                 st.success(f"Blume {deutsch} hinzugefügt!")
+
 def get_next_flower():
     to_learn = df[df["correct_count"] < 3]
     if to_learn.empty:
