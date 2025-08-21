@@ -140,6 +140,8 @@ if not df.empty:
         if korrekt:
             st.success("Alles korrekt! 🎉")
             df.loc[df["deutsch"] == flower["deutsch"], "correct_count"] += 1
+                # Richtige Antwort nur anzeigen, wenn alles korrekt ist
+            st.success(f"Richtige Antwort: {flower['deutsch']} / {flower['latein']} / {flower['familie']}")
         else:
             st.error("Nicht ganz richtig 😅")
     # --- Tipps generieren ---
@@ -214,9 +216,7 @@ if not df.empty:
             unsafe_allow_html=True
         )
 
-    # Richtige Antwort nur anzeigen, wenn alles korrekt ist
-    if korrekt:
-        st.success(f"Richtige Antwort: {flower['deutsch']} / {flower['latein']} / {flower['familie']}")
+
 # --- Fortschritt anzeigen ---
 st.header("Lernfortschritt")
 if not df.empty:
