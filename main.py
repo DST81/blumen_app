@@ -64,20 +64,27 @@ with st.form("add_flower"):
             bild_path = f"bilder/{bild.name}"
             with open(bild_path, "wb") as f:
                 f.write(bild.getbuffer())
-            # In DataFrame aufnehmen
+            with open(bild_path, "rb") as f:
+                content = f.read()
+            repo_path = f"bilder/{bild.name}"
+            try:
+                contents = repo.get_contents(repo_path, ref=BRANCH)
+                repo.update_file(contents.path, f"Update {bild.name}", content, contents.sha, branch=BRANCH)
+            except:
+                repo.create_file(repo_path, f"Add {bild.name}", content, branch=BRANCH)
+    
+            bild_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{BRANCH}/{repo_path}"
+    
             new_entry = pd.DataFrame({
                 "deutsch": [deutsch],
                 "latein": [latein],
                 "familie": [familie],
                 "bild_path": [bild_path],
+                "bild_url": [bild_url],
                 "correct_count": [0]
             })
             df = pd.concat([df, new_entry], ignore_index=True)
             df.to_csv("blumen.csv", index=False)
-
-            # CSV und Bild nach GitHub speichern
-            save_file_to_github("blumen.csv", "blumen.csv", f"add {deutsch}")
-            save_file_to_github(bild_path, bild_path, f"add image {bild.name}", binary=True)
 
             st.success(f"Blume {deutsch} hinzugefügt!")
 
@@ -87,7 +94,11 @@ if not df.empty:
     weights = df["correct_count"].max() - df["correct_count"] + 1
     flower = df.sample(weights=weights).iloc[0]
 
+    try:
     st.image(flower["bild_path"], width=300)
+    except:
+        st.image(flower["bild_url"], width=300)
+
 
     deutsch_guess = st.text_input("Deutscher Name")
     latein_guess = st.text_input("Lateinischer Name")
