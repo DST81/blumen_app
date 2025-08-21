@@ -45,9 +45,21 @@ except FileNotFoundError:
 try:
     answers_df = pd.read_csv("antworten.csv")
 except FileNotFoundError:
-    answers_df = pd.DataFrame(columns=["deutsch", "latein", "familie", "deutsch_guess", "latein_guess", "familie_guess", "korrekt"])
+    answers_df = pd.DataFrame(columns=[
+        "deutsch", "latein", "familie",
+        "deutsch_guess", "latein_guess", "familie_guess", "korrekt"
+    ])
     answers_df.to_csv("antworten.csv", index=False)
-    save_file_to_github("antworten.csv", "antworten.csv", "init antworten.csv")
+
+    # Statt save_file_to_github -> GitHub API nutzen
+    with open("antworten.csv", "r") as f:
+        csv_content = f.read()
+    try:
+        contents = repo.get_contents("antworten.csv", ref=BRANCH)
+        repo.update_file(contents.path, "update antworten.csv", csv_content, contents.sha, branch=BRANCH)
+    except:
+        repo.create_file("antworten.csv", "init antworten.csv", csv_content, branch=BRANCH)
+)
 
 st.title("Blumen lernen 🌸")
 
