@@ -177,31 +177,38 @@ else:
             st.rerun()  # sofort neue Blume laden
         else:
             st.error("Nicht ganz richtig 😅")
-
+            
             # Tipps generieren
             import random
             tips = []
+        
             for col, guess, correct in [
                 ("deutsch", deutsch_guess, correct_deutsch),
                 ("latein", latein_guess, correct_latein),
                 ("familie", familie_guess, correct_familie)
             ]:
                 if not correct:
-                    solution = flower[col]
+                    # Sicherstellen, dass guess und solution Strings sind
+                    guess = str(guess) if pd.notna(guess) else ""
+                    solution = str(flower[col]) if pd.notna(flower[col]) else ""
+                    
                     # Richtige Buchstaben beibehalten
                     revealed = "".join(
                         g if i < len(guess) and g.lower() == solution[i].lower() else "_"
                         for i, g in enumerate(solution)
                     )
+                    
                     # Einen weiteren zufälligen Buchstaben aufdecken
                     hidden_indices = [i for i, c in enumerate(revealed) if c == "_"]
                     if hidden_indices:
                         i = random.choice(hidden_indices)
                         revealed = revealed[:i] + solution[i] + revealed[i+1:]
+                    
                     tips.append(f"{col.capitalize()} Tipp: {revealed}")
-            for tip in tips:
-                st.info(tip)
-
+            
+            # Alle Tipps zusammen anzeigen
+            if tips:
+                st.info("\n".join(tips))
 
 # --- Bisherige Antworten anzeigen (nur 5) ---
 if not answers_df.empty:
