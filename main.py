@@ -204,4 +204,4 @@ if st.button("Neu starten"):
     st.session_state.deutsch_input = ""
     st.session_state.latein_input = ""
     st.session_state.familie_input = ""
-    st.experimental_rerun()  # neu laden, damit alles geleert wird
+    st.rerun()  # neu laden, damit alles geleert wird
