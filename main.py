@@ -103,16 +103,19 @@ def get_next_flower():
     weights = 3 - to_learn["correct_count"]
     return to_learn.sample(weights=weights).iloc[0]
 
-    # --- Direkt nach Wahl der nächsten Blume ---
-    if st.session_state.current_flower_idx is None or st.session_state.get("last_correct", False):
-        next_flower = get_next_flower()  # z.B. df.sample(weights=...)
-        if next_flower is not None:
-            st.session_state.current_flower_idx = next_flower.name
-            st.session_state.last_correct = False
-            # Textfelder zurücksetzen
-            st.session_state.deutsch_input = ""
-            st.session_state.latein_input = ""
-            st.session_state.familie_input = ""
+# --- Auswahl der nächsten Blume ---
+if st.session_state.current_flower_idx is None or st.session_state.get("last_correct", False):
+    next_flower = get_next_flower()
+    if next_flower is not None:
+        st.session_state.current_flower_idx = next_flower.name
+        st.session_state.last_correct = False
+        # Input-Felder zurücksetzen
+        st.session_state.deutsch_input = ""
+        st.session_state.latein_input = ""
+        st.session_state.familie_input = ""
+    else:
+        st.session_state.current_flower_idx = None  # alle gelernt
+
     
 
     else:
@@ -191,17 +194,16 @@ if not df.empty:
     learned = len(df[df["correct_count"] >= 3])
     st.write(f"Von {total} Blumen sind {learned} Blumen gut gelernt (≥3 richtige Antworten).")
     st.dataframe(df[["deutsch", "correct_count"]])
-# Button zum Neu-Lernen / Zurücksetzen
+
 if st.button("Neu starten"):
-    # Alle Fortschritte zurücksetzen
     df["correct_count"] = 0
     df.to_csv("blumen.csv", index=False)
     save_file_to_github("blumen.csv", "blumen.csv", "reset progress")
     
-    # Session-States zurücksetzen
     st.session_state.current_flower_idx = None
     st.session_state.last_correct = False
     st.session_state.deutsch_input = ""
     st.session_state.latein_input = ""
     st.session_state.familie_input = ""
-    st.rerun()  # neu laden, damit alles geleert wird
+    st.rerun()
+
