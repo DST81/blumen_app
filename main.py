@@ -4,6 +4,12 @@ import os
 import base64
 from github import Github
 
+
+st.set_page_config(
+    page_title="Blumen lernen 🌸",
+    page_icon="🌸",  # oder ein lokales Bild wie "icon.png"
+    layout="centered"
+)
 # --- GitHub-Infos ---
 GITHUB_USER = "DST81"
 REPO_NAME = "blumen_app"
