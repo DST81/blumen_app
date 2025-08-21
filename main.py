@@ -38,7 +38,7 @@ os.makedirs("bilder", exist_ok=True)
 try:
     df = pd.read_csv("blumen.csv")
 except FileNotFoundError:
-    df = pd.DataFrame(columns=["deutsch", "latein", "familie", "bild_path", "correct_count"])
+    df = pd.DataFrame(columns=["deutsch", "latein", "familie", "bild_url", "correct_count"])
     df.to_csv("blumen.csv", index=False)
     save_file_to_github("blumen.csv", "blumen.csv", "init blumen.csv")
 
