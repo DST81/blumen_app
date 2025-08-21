@@ -119,7 +119,7 @@ def get_next_flower():
     if to_learn.empty:
         return None
     weights = 3 - to_learn["correct_count"]
-    return to_learn.sample(weights=weights, random_state=42).iloc[0]
+    return to_learn.sample(weights=weights).iloc[0]
 
 # --- Auswahl der nächsten Blume ---
 if st.session_state.current_flower_idx is None or st.session_state.last_correct:
