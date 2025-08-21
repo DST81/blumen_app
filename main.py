@@ -59,7 +59,7 @@ except FileNotFoundError:
         repo.update_file(contents.path, "update antworten.csv", csv_content, contents.sha, branch=BRANCH)
     except:
         repo.create_file("antworten.csv", "init antworten.csv", csv_content, branch=BRANCH)
-)
+
 
 st.title("Blumen lernen 🌸")
 
