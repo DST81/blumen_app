@@ -79,7 +79,6 @@ with st.form("add_flower"):
                 "deutsch": [deutsch],
                 "latein": [latein],
                 "familie": [familie],
-                "bild_path": [bild_path],
                 "bild_url": [bild_url],
                 "correct_count": [0]
             })
@@ -94,10 +93,7 @@ if not df.empty:
     weights = df["correct_count"].max() - df["correct_count"] + 1
     flower = df.sample(weights=weights).iloc[0]
 
-    try:
-        st.image(flower["bild_path"], width=300)
-    except:
-        st.image(flower["bild_url"], width=300)
+    st.image(flower["bild_url"], width=300)
 
 
     deutsch_guess = st.text_input("Deutscher Name")
