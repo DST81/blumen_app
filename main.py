@@ -7,7 +7,7 @@ from github.GithubException import UnknownObjectException
 
 
 st.set_page_config(
-    page_title="Blumen lernen 🌸",
+    page_title="Blumen lernen, das  macht Spass 🌸",
     page_icon="🌸",  # oder ein lokales Bild wie "icon.png"
     layout="centered"
 )
